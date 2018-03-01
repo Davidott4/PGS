@@ -34,17 +34,13 @@ void APGSCharacter::BeginPlay()
 
 void APGSCharacter::MoveForward(float Value)
 {
-	FVector DirectionVec = FVector::VectorPlaneProject(SpringArmComp->GetForwardVector(), FVector::UpVector);
-	DirectionVec = DirectionVec.GetSafeNormal();
-	AddMovementInput(DirectionVec * Value);
-	
+	ForwardInput = Value;
 }
 
 void APGSCharacter::MoveRight(float Value)
 {
-	FVector DirectionVec = FVector::VectorPlaneProject(SpringArmComp->GetRightVector(), FVector::UpVector);
-	DirectionVec = DirectionVec.GetSafeNormal();
-	AddMovementInput(DirectionVec * Value);
+
+	RightInput = Value;
 }
 
 void APGSCharacter::PitchCamera(float Value)
@@ -61,6 +57,16 @@ void APGSCharacter::YawCamera(float Value)
 	FRotator FinalRotation = SpringArmComp->GetComponentRotation();
 	FinalRotation = FRotator(FinalRotation.Pitch, FinalRotation.Yaw + Value, FinalRotation.Roll);
 	SpringArmComp->SetWorldRotation(FinalRotation);
+}
+
+void APGSCharacter::MoveCharacter()
+{
+	FVector ForwardVec = FVector::VectorPlaneProject(SpringArmComp->GetForwardVector(), FVector::UpVector);
+	ForwardVec = ForwardVec.GetSafeNormal();
+	FVector RightVec = FVector::VectorPlaneProject(SpringArmComp->GetRightVector(), FVector::UpVector);
+	RightVec = RightVec.GetSafeNormal();
+	AddMovementInput(ForwardVec * ForwardInput);
+	AddMovementInput(RightVec * RightInput);
 }
 
 void APGSCharacter::RotateTowardsVelocity(float DeltaTime)
@@ -81,19 +87,14 @@ void APGSCharacter::RotateTowardsVelocity(float DeltaTime)
 void APGSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	RotateTowardsVelocity(DeltaTime);
+	MoveCharacter();
+
+
+	if (FMath::Abs(ForwardInput) > .1 || FMath::Abs(RightInput) > .1)
+	{
+		RotateTowardsVelocity(DeltaTime);
+	}
 }
 
-// Called to bind functionality to input
-void APGSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	
-	PlayerInputComponent->BindAxis("MoveForwardAxis", this, &APGSCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRightAxis", this, &APGSCharacter::MoveRight);
-	PlayerInputComponent->BindAxis("LookUpAxis", this, &APGSCharacter::PitchCamera);
-	PlayerInputComponent->BindAxis("LookRightAxis", this, &APGSCharacter::YawCamera);
-
-}
 

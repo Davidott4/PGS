@@ -37,12 +37,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
 		float CameraSpeed;
 
+	// movement variables
+	float ForwardInput;
+	float RightInput;
+	float CameraPitch;
+	float CameraYaw;
 
-
-	void MoveForward(float Value);
-	void MoveRight(float Value);
-	void PitchCamera(float Value);
-	void YawCamera(float Value);
+	void MoveCharacter();
 	void RotateTowardsVelocity(float DeltaTime);
 
 public:	
@@ -50,8 +51,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+	void PitchCamera(float Value);
+	void YawCamera(float Value);
 	
 };
