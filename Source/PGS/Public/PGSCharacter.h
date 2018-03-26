@@ -22,6 +22,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void SetAnimationVariables();
+
 
 	// Camera
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
@@ -43,6 +45,9 @@ protected:
 	float CameraPitch;
 	float CameraYaw;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Movement")
+		float RunVelocity;
+
 	void MoveCharacter();
 	void RotateTowardsVelocity(float DeltaTime);
 
@@ -56,5 +61,9 @@ public:
 	void MoveRight(float Value);
 	void PitchCamera(float Value);
 	void YawCamera(float Value);
+
+	void JumpAction();
+	void SprintAction();
+	void StopSprintAction();
 	
 };

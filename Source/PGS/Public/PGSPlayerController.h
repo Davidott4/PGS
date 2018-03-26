@@ -29,4 +29,7 @@ protected:
 	void MoveRight(float Value);
 	void PitchCamera(float Value);
 	void YawCamera(float Value);
+	void JumpAction();
+	void SprintAction();
+	void StopSprintAction();
 };

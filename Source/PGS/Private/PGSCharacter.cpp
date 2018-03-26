@@ -32,6 +32,11 @@ void APGSCharacter::BeginPlay()
 	
 }
 
+void APGSCharacter::SetAnimationVariables()
+{
+	RunVelocity = GetVelocity().Size();
+}
+
 void APGSCharacter::MoveForward(float Value)
 {
 	ForwardInput = Value;
@@ -59,6 +64,21 @@ void APGSCharacter::YawCamera(float Value)
 	SpringArmComp->SetWorldRotation(FinalRotation);
 }
 
+void APGSCharacter::JumpAction()
+{
+	// TODO
+}
+
+void APGSCharacter::SprintAction()
+{
+
+}
+
+void APGSCharacter::StopSprintAction()
+{
+
+}
+
 void APGSCharacter::MoveCharacter()
 {
 	FVector ForwardVec = FVector::VectorPlaneProject(SpringArmComp->GetForwardVector(), FVector::UpVector);
@@ -67,6 +87,7 @@ void APGSCharacter::MoveCharacter()
 	RightVec = RightVec.GetSafeNormal();
 	AddMovementInput(ForwardVec * ForwardInput);
 	AddMovementInput(RightVec * RightInput);
+	SetAnimationVariables();
 }
 
 void APGSCharacter::RotateTowardsVelocity(float DeltaTime)

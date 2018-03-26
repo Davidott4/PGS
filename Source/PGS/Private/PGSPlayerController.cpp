@@ -35,6 +35,10 @@ void APGSPlayerController::SetupInputComponent()
 		InputComponent->BindAxis("MoveRightAxis", this,  &APGSPlayerController::MoveRight);
 		InputComponent->BindAxis("LookUpAxis", this, &APGSPlayerController::PitchCamera);
 		InputComponent->BindAxis("LookRightAxis", this,  &APGSPlayerController::YawCamera);
+		InputComponent->BindAction("JumpAction", IE_Pressed ,this, &APGSPlayerController::JumpAction);
+		InputComponent->BindAction("SprintAction", IE_Pressed, this, &APGSPlayerController::SprintAction);
+		InputComponent->BindAction("SprintAction", IE_Released, this, &APGSPlayerController::StopSprintAction);
+
 	}
 }
 
@@ -67,6 +71,30 @@ void APGSPlayerController::YawCamera(float Value)
 	if (PlayerCharacter)
 	{
 		PlayerCharacter->YawCamera(Value);
+	}
+}
+
+void APGSPlayerController::JumpAction()
+{
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->JumpAction();
+	}
+}
+
+void APGSPlayerController::SprintAction()
+{
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->SprintAction();
+	}
+}
+
+void APGSPlayerController::StopSprintAction()
+{
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->StopSprintAction();
 	}
 }
 
