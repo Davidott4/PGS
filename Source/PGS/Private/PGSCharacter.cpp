@@ -4,6 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 APGSCharacter::APGSCharacter()
@@ -23,6 +24,9 @@ APGSCharacter::APGSCharacter()
 	CameraSpeed = 1.0f;
 
 	// GetMovementComponent()->StopMovementImmediately();
+	HasLockOnTarget = false;
+	isCameraLocked = false;
+	LeanDelta = FRotator(0.0f);
 }
 
 // Called when the game starts or when spawned
@@ -35,6 +39,7 @@ void APGSCharacter::BeginPlay()
 void APGSCharacter::SetAnimationVariables()
 {
 	RunVelocity = GetVelocity().Size();
+	
 }
 
 void APGSCharacter::MoveForward(float Value)
@@ -48,25 +53,43 @@ void APGSCharacter::MoveRight(float Value)
 	RightInput = Value;
 }
 
+
+
 void APGSCharacter::PitchCamera(float Value)
 {
+	CameraPitch = Value * CameraSpeed;
+	/*
 	Value *= CameraSpeed;
 	FRotator FinalRotation = SpringArmComp->GetComponentRotation();
 	FinalRotation = FRotator(FMath::Clamp(FinalRotation.Pitch + Value, MinCameraPitch, MaxCameraPitch), FinalRotation.Yaw, FinalRotation.Roll);
 	SpringArmComp->SetWorldRotation(FinalRotation);
+	*/
 }
 
 void APGSCharacter::YawCamera(float Value)
 {
+	CameraYaw = Value * CameraSpeed;
+	/*
 	Value *= CameraSpeed;
 	FRotator FinalRotation = SpringArmComp->GetComponentRotation();
 	FinalRotation = FRotator(FinalRotation.Pitch, FinalRotation.Yaw + Value, FinalRotation.Roll);
 	SpringArmComp->SetWorldRotation(FinalRotation);
+	*/
+}
+
+void APGSCharacter::RotateSpringArm(float DeltaTime)
+{
+	FRotator CurrentRotation = SpringArmComp->GetComponentRotation();
+	FRotator TargetRotation = FRotator(FMath::Clamp(CurrentRotation.Pitch + CameraPitch, MinCameraPitch, MaxCameraPitch), CurrentRotation.Yaw + CameraYaw, CurrentRotation.Roll);
+	//FRotator FinalRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, CameraSpeed*100);
+	
+	SpringArmComp->SetWorldRotation(TargetRotation);
 }
 
 void APGSCharacter::JumpAction()
 {
 	// TODO
+	Jump();
 }
 
 void APGSCharacter::SprintAction()
@@ -79,8 +102,28 @@ void APGSCharacter::StopSprintAction()
 
 }
 
+
+void APGSCharacter::LockCameraAction()
+{
+
+	if (!HasLockOnTarget)
+	{
+		CameraTargetRotator = FRotator(GetActorForwardVector().Rotation());
+	}
+	// TODO: Add Target Logic
+}
+
+void APGSCharacter::UnlockCameraAction()
+{
+	HasLockOnTarget = false;
+	isCameraLocked = false;
+}
+
 void APGSCharacter::MoveCharacter()
 {
+	FRotator ControlRot = GetControlRotation();
+	
+	
 	FVector ForwardVec = FVector::VectorPlaneProject(SpringArmComp->GetForwardVector(), FVector::UpVector);
 	ForwardVec = ForwardVec.GetSafeNormal();
 	FVector RightVec = FVector::VectorPlaneProject(SpringArmComp->GetRightVector(), FVector::UpVector);
@@ -88,6 +131,7 @@ void APGSCharacter::MoveCharacter()
 	AddMovementInput(ForwardVec * ForwardInput);
 	AddMovementInput(RightVec * RightInput);
 	SetAnimationVariables();
+	
 }
 
 void APGSCharacter::RotateTowardsVelocity(float DeltaTime)
@@ -99,6 +143,8 @@ void APGSCharacter::RotateTowardsVelocity(float DeltaTime)
 		FVector TargetDirection = Velocity;
 		FRotator NewDirection = FMath::RInterpTo(CurrentDirection.ToOrientationRotator(), TargetDirection.ToOrientationRotator(), DeltaTime, Velocity.Size());
 		NewDirection = FRotator(NewDirection.Pitch, NewDirection.Yaw - 90.0f, NewDirection.Roll);
+		// Set Lean Delta for Animation
+		LeanDelta = FRotator(GetVelocity().Rotation() - GetControlRotation());
 		GetMesh()->SetWorldRotation(NewDirection);
 	}
 	
@@ -109,7 +155,7 @@ void APGSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	MoveCharacter();
-
+	RotateSpringArm(DeltaTime);
 
 	if (FMath::Abs(ForwardInput) > .1 || FMath::Abs(RightInput) > .1)
 	{

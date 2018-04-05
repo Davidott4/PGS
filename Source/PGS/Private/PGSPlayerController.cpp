@@ -38,6 +38,9 @@ void APGSPlayerController::SetupInputComponent()
 		InputComponent->BindAction("JumpAction", IE_Pressed ,this, &APGSPlayerController::JumpAction);
 		InputComponent->BindAction("SprintAction", IE_Pressed, this, &APGSPlayerController::SprintAction);
 		InputComponent->BindAction("SprintAction", IE_Released, this, &APGSPlayerController::StopSprintAction);
+		InputComponent->BindAction("LightAttackAction", IE_Pressed, this, &APGSPlayerController::LightAttackAction);
+		InputComponent->BindAction("LockCameraAction", IE_Pressed, this, &APGSPlayerController::LockCameraAction);
+		InputComponent->BindAction("LockCameraAction", IE_Released, this, &APGSPlayerController::UnlockCameraAction);
 
 	}
 }
@@ -82,6 +85,14 @@ void APGSPlayerController::JumpAction()
 	}
 }
 
+void APGSPlayerController::LightAttackAction()
+{
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->LightAttackAction();
+	}
+}
+
 void APGSPlayerController::SprintAction()
 {
 	if (PlayerCharacter)
@@ -95,6 +106,22 @@ void APGSPlayerController::StopSprintAction()
 	if (PlayerCharacter)
 	{
 		PlayerCharacter->StopSprintAction();
+	}
+}
+
+void APGSPlayerController::LockCameraAction()
+{
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->LockCameraAction();
+	}
+}
+
+void APGSPlayerController::UnlockCameraAction()
+{
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->UnlockCameraAction();
 	}
 }
 

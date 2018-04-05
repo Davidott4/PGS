@@ -45,11 +45,20 @@ protected:
 	float CameraPitch;
 	float CameraYaw;
 
+	//animated variables
 	UPROPERTY(BlueprintReadWrite, Category = "Movement")
 		float RunVelocity;
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+		FRotator LeanDelta;
 
 	void MoveCharacter();
 	void RotateTowardsVelocity(float DeltaTime);
+
+
+	// Camera Lock-on
+	bool isCameraLocked;
+	FRotator CameraTargetRotator;
+	bool HasLockOnTarget;
 
 public:	
 	// Called every frame
@@ -61,9 +70,14 @@ public:
 	void MoveRight(float Value);
 	void PitchCamera(float Value);
 	void YawCamera(float Value);
+	void RotateSpringArm(float DeltaTime);
 
 	void JumpAction();
 	void SprintAction();
 	void StopSprintAction();
+	void LockCameraAction();
+	void UnlockCameraAction();
+	UFUNCTION(BlueprintImplementableEvent)
+		void LightAttackAction();
 	
 };

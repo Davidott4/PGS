@@ -30,6 +30,9 @@ protected:
 	void PitchCamera(float Value);
 	void YawCamera(float Value);
 	void JumpAction();
+	void LightAttackAction();
 	void SprintAction();
 	void StopSprintAction();
+	void LockCameraAction();
+	void UnlockCameraAction();
 };
